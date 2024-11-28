@@ -1,0 +1,1 @@
+default inventory = Inventory()
