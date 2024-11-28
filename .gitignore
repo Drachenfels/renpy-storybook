@@ -167,3 +167,5 @@ game/cache/
 game/saves/
 log.txt
 *.rpymc
+traceback.txt
+errors.txt
