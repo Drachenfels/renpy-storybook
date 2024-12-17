@@ -1,0 +1,95 @@
+## Choice screen ###############################################################
+##
+## This screen is used to display the in-game choices presented by the menu
+## statement. The one parameter, items, is a list of objects, each with caption
+## and action fields.
+##
+## https://www.renpy.org/doc/html/screen_special.html#choice
+style choice_vscrollbar is vscrollbar
+style choice_vscrollbar:
+    keyboard_focus False
+
+screen choice(items):
+    style_prefix "choice"
+    default yadj = ui.adjustment()
+    default hoveredrect = (1, 2, 3, 100)
+    default hoveredy = 100
+
+    key "K_UP" action ScrollViewport(yadj, 'up', hoveredy)
+    key "K_DOWN" action ScrollViewport(yadj, 'down', hoveredy)
+    key "pad_righty_neg" action ScrollViewport(yadj, 'up', hoveredy)
+    key "pad_dpup_press" action ScrollViewport(yadj, 'up', hoveredy)
+    key "pad_dpdown_press" action ScrollViewport(yadj, 'down', hoveredy)
+    key "pad_righty_pos" action ScrollViewport(yadj, 'down', hoveredy)
+    add "gui/choices_backdrop.png"
+    viewport yadjustment yadj:
+        draggable True
+        mousewheel True
+        scrollbars "vertical"
+        xalign 0.0
+        xsize 430
+        ysize 650
+        xpos 1480
+        ypos 25
+        vbox:
+            for idx, i in enumerate(items):
+                if idx == 0:
+                    textbutton i.caption action i.action default_focus True
+                        #hovered SetVariable("captured", renpy.focus_coordinates())
+                else:
+                    textbutton i.caption action i.action
+                        #hovered SetVariable("captured", renpy.focus_coordinates())
+
+#screen focus_screen(name):
+#    default coord = GetFocusRect("rect") # Tuple of (x, y, w, h)
+#    $ yadj = int(coord[3]) # Cast float to integer
+
+## When this is true, menu captions will be spoken by the narrator. When false,
+## menu captions will be displayed as empty buttons.
+define config.narrator_menu = True
+
+style choice_vbox is vbox
+style choice_button is button
+style choice_button_text is button_text
+
+style choice_vbox:
+    xsize 350
+    xpos 1470
+    ypos 50
+
+    spacing gui.choice_spacing
+
+style choice_button is default:
+    properties gui.button_properties("choice_button")
+
+style choice_button_text is default:
+    properties gui.button_text_properties("choice_button")
+    #color "#ffffff"
+    outlines [ (3, "#000000")]
+    ######## Viewport Scrolling ##############
+init python:
+    class ScrollViewport(Action):
+
+        def __init__(self, yadj, scroll_dir, step=(gui.interface_text_size)*3):
+        #def __init__(self, yadj, scroll_dir, step):
+            self.yadj = yadj
+            self.scroll_dir = scroll_dir
+            self.step = step
+
+        def __call__(self):
+            #yadj = renpy.focus_coordinates()[3]
+            # Don't confuse dir with the other use case for "up" which
+            # refers to the state of the key (pressed/released)
+            if self.scroll_dir == "up":
+                if small_yadj:
+                    self.yadj.change(self.yadj.value - (self.step/2))
+                else:
+                    self.yadj.change(self.yadj.value - self.step)
+                renpy.display.behavior.queue_event('focus_up', up=False)
+            else:
+                if small_yadj:
+                    self.yadj.change(self.yadj.value + (self.step/2))
+                else:
+                    self.yadj.change(self.yadj.value + self.step)
+                renpy.display.behavior.queue_event('focus_down', up=False)
+            renpy.restart_interaction```
