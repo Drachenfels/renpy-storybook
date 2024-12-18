@@ -38,3 +38,8 @@ screen inventory():
                 background Solid("#cfffdb")
 
                 textbutton _("Back") action Return()
+
+            frame:
+                background Solid("#4A90E2")
+
+                text "Inventory assets credits to: {a=https://emblemadept.itch.io/}{color=#4B3621}emblemadept{/color}{/a}"
