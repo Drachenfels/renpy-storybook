@@ -10,5 +10,6 @@ screen story_picker():
             yalign 0.2
             textbutton _("Inventory System") action [Hide(), Call("start_story_inventory")]
             textbutton _("Game of Pong") action [Hide(), Call("start_story_pong")]
+            textbutton _("Viewports with choices") action [Hide(), Call("start_many_viewports_with_choices")]
 
             textbutton _("MainMenu") action MainMenu(confirm=False, save=False)
