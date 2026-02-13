@@ -59,26 +59,37 @@ class Entry:
     def __init__(self, content):
         self.content = []
 
-        shuffled_content = content.split()
-        renpy.random.shuffle(shuffled_content)
+        shuffled_words = self.shuffle_words(content)
 
-        for text in content.split():
-            shuffled_word = None
-
-            # guarantees that no single word will match the original
-            while shuffled_word is None:
-                random_pick = renpy.random.choice(shuffled_content)
-
-                if random_pick != text or len(shuffled_content) == 1:
-                    shuffled_word = random_pick
-
+        for word in content.split():
             self.content.append(
                 Word(
-                    text,
-                    shuffled_content.pop(),
-                    illegible_word(text),
+                    word,
+                    shuffled_words.pop(0),
+                    illegible_word(word),
                 )
             )
+
+    def shuffle_words(self, content):
+        shuffled_words = content.split()
+        words = content.split()
+        punctuations = ',.!?;:"()[]{}<>'
+
+        # guarantees that no single word will match the original
+        attempts = 100
+
+        while any(
+            words[idx].strip(punctuations) == shuffled_words[idx].strip(punctuations)
+            for idx in range(len(shuffled_words))
+        ):
+            renpy.random.shuffle(shuffled_words)
+
+            attempts -= 1
+
+            if attempts <= 0:
+                break
+
+        return shuffled_words
 
     def __repr__(self):
         return f"'{self.full_text}'"
@@ -129,6 +140,9 @@ class Page:
     @property
     def unsolved_entries(self):
         return self._unsolved_entries[1:]
+
+    def add_entry(self, content):
+        self._unsolved_entries.append(Entry(content))
 
 
 class ProgressiveScramble:
